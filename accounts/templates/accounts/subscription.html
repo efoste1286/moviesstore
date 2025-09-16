@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col mx-auto mb-3">
+        <h2>My Subscription</h2>
+        <hr />
+
+        <p><b>Total Spent:</b> ${{ template_data.total_spent|floatformat:2 }}</p>
+        <p><b>Subscription Level:</b> {{ template_data.level }}</p>
+
+        <hr />
+        <p class="text-muted small mb-0">
+          <b>Definition:</b> Subscription is based on the total amount you've spent on movies.
+        </p>
+        <ul class="text-muted small">
+          <li><b>Basic</b> — Less than $15 (X &lt; $15)</li>
+          <li><b>Medium</b> — Between $15 and $30 ($15 ≤ X &lt; $30)</li>
+          <li><b>Premium</b> — More than $30 ($30 ≤ X)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
