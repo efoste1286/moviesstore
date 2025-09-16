@@ -48,3 +48,15 @@
     width: fit-content;
     max-height: 400px;
 }
+
+.heart-btn svg path {
+  transition: transform 0.15s ease, fill 0.25s ease;
+}
+
+.heart-btn:hover svg path {
+  transform: scale(1.15);
+}
+
+.heart-btn:active svg path {
+  transform: scale(1.3);
+}

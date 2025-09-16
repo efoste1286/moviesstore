@@ -60,7 +60,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / 'moviesstore' / 'templates'],
-        #[os.path.join(BASE_DIR / 'moviesstore/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

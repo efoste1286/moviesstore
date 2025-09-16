@@ -1,28 +1,38 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Movie, Review
+from .models import Movie, Review, Heart
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 def index(request):
-    search_term = request.GET.get('search')
-    if search_term:
-        movies = Movie.objects.filter(name__icontains=search_term)
-    else:
-        movies = Movie.objects.all()
+    movies = Movie.objects.all()
 
-    template_data = {}
-    template_data['title'] = 'Movies'
-    template_data['movies'] = movies
-    return render(request, 'movies/index.html', {'template_data': template_data})
+    if request.user.is_authenticated:
+        hearted_ids = set(
+            Heart.objects.filter(user=request.user).values_list("movie_id", flat=True)
+        )
+    else:
+        hearted_ids = set()
+
+    for m in movies:
+        m.ihearted = m.id in hearted_ids   
+
+    template_data = {"movies": movies}
+    return render(request, "movies/index.html", {"template_data": template_data})
 
 def show(request, id):
-    movie = Movie.objects.get(id=id)
+    movie = get_object_or_404(Movie, pk=id)
     reviews = Review.objects.filter(movie=movie)
 
-    template_data = {}
-    template_data['title'] = movie.name
-    template_data['movie'] = movie
-    template_data['reviews'] = reviews
-    return render(request, 'movies/show.html', {'template_data': template_data})
+    if request.user.is_authenticated:
+        movie.ihearted = Heart.objects.filter(user=request.user, movie=movie).exists()
+    else:
+        movie.ihearted = False
+
+    template_data = {
+        "movie": movie,
+        "reviews": reviews,
+    }
+    return render(request, "movies/show.html", {"template_data": template_data})
 
 @login_required
 def create_review(request, id):
@@ -61,3 +71,14 @@ def delete_review(request, id, review_id):
     review = get_object_or_404(Review, id=review_id, user=request.user)
     review.delete()
     return redirect('movies.show', id=id)
+
+@require_POST
+@login_required
+def toggle_heart(request, id):
+    movie = get_object_or_404(Movie, pk=id)
+    qs = Heart.objects.filter(user=request.user, movie=movie)
+    if qs.exists():
+        qs.delete()                       # un-heart
+    else:
+        Heart.objects.create(user=request.user, movie=movie)  # heart
+    return redirect(request.META.get("HTTP_REFERER", "/movies/"))
