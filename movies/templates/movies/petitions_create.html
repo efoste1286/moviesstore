@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-md-8 col-lg-6 mx-auto mb-3">
+        <h2>Create Petition</h2>
+        <hr />
+
+        {% if template_data.error %}
+          <div class="alert alert-danger">{{ template_data.error }}</div>
+        {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Movie title (what should be added?)</label>
+            <input type="text" name="title" class="form-control" value="{{ template_data.form_title }}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Why should it be included? (optional)</label>
+            <textarea name="description" class="form-control" rows="4">{{ template_data.form_description }}</textarea>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn bg-dark text-white">Create</button>
+            <a href="{% url 'movies.petitions_index' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col mx-auto mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Petitions</h2>
+          <a class="btn bg-dark text-white" href="{% url 'movies.petitions_create' %}">New Petition</a>
+        </div>
+        <hr />
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} mb-3">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        {% if template_data.petitions %}
+          <div class="list-group">
+            {% for p in template_data.petitions %}
+              <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h5 class="mb-1">{{ p.title }}</h5>
+                    {% if p.description %}
+                      <p class="mb-1">{{ p.description }}</p>
+                    {% endif %}
+                    <small class="text-muted">
+                      By {{ p.created_by.username }} • {{ p.created_at|date:"M d, Y H:i" }}
+                    </small>
+                  </div>
+                  <div class="text-end">
+                    <div class="mb-1"><b>Yes:</b> {{ p.yes_total }}</div>
+                    <form method="post" action="{% url 'movies.petitions_vote_yes' petition_id=p.id %}">
+                      {% csrf_token %}
+                      <button class="btn btn-sm btn-outline-success" type="submit">Vote Yes</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted">No petitions yet. Be the first to create one.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
